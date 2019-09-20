@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for jstrube/Pythia8Builder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: Xf3Xc4VwKoHXxRuxsqLiSQRLbrFBV2Es06SMMwuR4UQTzi2RdvS8s3xyGQq8Wg0YQ/tSWYrOMJ0ckOf5OCPZ4jegvPXITQc3Q7669CW5zLKI5wMzh9/4ua+FERWl0jnkpGOxLvXSS8ki/LE2XO9wKu5Eytc97RDBF9diVp/Qog/SG9ob6xzEJX0XOBFh7Xm41P/Uv1M5GIgwYHgagmdQR1q8idpGv04qRGwKTgrOdQzMjtf7a1QquLTrXtrAizAg0a9g0l309foIQIsupuoebvjT/ftn1eIcNUiJ9kl8JLe0q72LBMUAjcETWoN0biREmczu2zRjPQiQxVte0ky+vKDXnVoG2l+fXA1HNesy84dc+Ye7X5AA4TWCH86r3o8fSF4x4iHW0DbVr++p5PokEqcFOBOWTHkH/87gm6GaALGP/qoAMKnxy8ZUgiB+bptb0JRv423Ag9YQeFYYUP/tSyJRzxZCXrntiTkhYDEk/LHmKYHyUk6WaEzGZ79WaSALDZ4Uyv+AR1bUwavtbHh/P4EXyDTj4RyZ2cMY4kaZI1Szg6MuYGqjdx1vorhSqB+nc0GzSRz0+drn1I+vE2xBL7qTxWDkvg2qZv6ZBEpDmFbI/8VBn36eogy8yij5UK6CK6L6K/dE1JmLoECf/S8sqFkSC5Kv391bPk2GjFO6m+I=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: jstrube/Pythia8Builder
+        tags: true
